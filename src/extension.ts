@@ -13,11 +13,13 @@ interface Command {
 }
 
 const microcodeCommands = microcode.commands.map((command) => {
-  return command.command;
+  return command;
 });
 
+console.log(microcodeCommands);
+
 function getCommandArguments(commandName: string): Argument[] | undefined {
-  const command: Command | undefined = microcode.commands.find(
+  const command: Command | undefined = microcodeCommands.find(
     (c) => c.command === commandName
   );
   return command ? command.args : undefined;
@@ -72,12 +74,16 @@ export function activate(context: vscode.ExtensionContext) {
           title: "Re-trigger completions...",
         };
 
-        const completionItems = microcode.commands.map((command: Command) => {
+        const completionItems = microcodeCommands.map((command: Command) => {
           const completionItem = new vscode.CompletionItem(
             command.command,
             vscode.CompletionItemKind.Method
           );
-          completionItem.detail = command.description;
+
+          completionItem.documentation = new vscode.MarkdownString(
+            command.description
+          );
+
           return completionItem;
         });
 
@@ -100,21 +106,24 @@ export function activate(context: vscode.ExtensionContext) {
           .lineAt(position)
           .text.slice(0, position.character);
 
-        for (const command of microcodeCommands) {
-          if (linePrefix.endsWith(command + "=")) {
-            console.log("command: " + command);
-            break;
-          }
-          return undefined;
-        }
+        let matchedCommand = undefined;
+
+        microcodeCommands.map((command: Command) => {
+          if (linePrefix.endsWith(command.command + "="))
+            matchedCommand = command.command;
+        });
+
+        if (matchedCommand === undefined) return undefined;
 
         const commandArguments = getCommandArguments(linePrefix.slice(0, -1));
+
         const completionItems = commandArguments?.map((arg) => {
           const completionItem = new vscode.CompletionItem(
             arg.arg,
             vscode.CompletionItemKind.Method
           );
           completionItem.detail = arg.description;
+
           return completionItem;
         });
 

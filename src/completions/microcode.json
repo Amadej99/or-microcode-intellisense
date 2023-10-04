@@ -2,7 +2,7 @@
   "commands": [
     {
       "command": "aluop",
-      "description": "Izbere operacijo za ALU",
+      "description": "## Izberi ukaz za ALU\n Možnosti:\n - Mul\n - Div\n - Add\n - Sub\n",
       "args": [
         {
           "arg": "mul",
