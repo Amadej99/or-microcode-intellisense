@@ -35,45 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
       ) {
-        // a simple completion item which inserts `Hello World!`
-        const simpleCompletion = new vscode.CompletionItem("Hello World!");
-
-        // a completion item that inserts its text as snippet,
-        // the `insertText`-property is a `SnippetString` which will be
-        // honored by the editor.
-        const snippetCompletion = new vscode.CompletionItem(
-          "Good part of the day"
-        );
-        snippetCompletion.insertText = new vscode.SnippetString(
-          "Good ${1|morning,afternoon,evening|}. It is ${1}, right?"
-        );
-        const docs: any = new vscode.MarkdownString(
-          "Inserts a snippet that lets you select [link](x.ts)."
-        );
-        snippetCompletion.documentation = docs;
-        docs.baseUri = vscode.Uri.parse("http://example.com/a/b/c/");
-
-        // a completion item that can be accepted by a commit character,
-        // the `commitCharacters`-property is set which means that the completion will
-        // be inserted and then the character will be typed.
-        const commitCharacterCompletion = new vscode.CompletionItem("console");
-        commitCharacterCompletion.commitCharacters = ["."];
-        commitCharacterCompletion.documentation = new vscode.MarkdownString(
-          "Press `.` to get `console.`"
-        );
-
-        // a completion item that retriggers IntelliSense when being accepted,
-        // the `command`-property is set which the editor will execute after
-        // completion has been inserted. Also, the `insertText` is set so that
-        // a space is inserted after `new`
-        const commandCompletion = new vscode.CompletionItem("new");
-        commandCompletion.kind = vscode.CompletionItemKind.Keyword;
-        commandCompletion.insertText = "new ";
-        commandCompletion.command = {
-          command: "editor.action.triggerSuggest",
-          title: "Re-trigger completions...",
-        };
-
         const completionItems = microcodeCommands.map((command: Command) => {
           const completionItem = new vscode.CompletionItem(
             command.command,
@@ -87,7 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
           return completionItem;
         });
 
-        // return all completion items as array
         return completionItems;
       },
     }
@@ -103,13 +63,14 @@ export function activate(context: vscode.ExtensionContext) {
         const currentLine = document.lineAt(position.line).text;
         const currentWords = currentLine.split(" ");
 
-        const position1 = vscode.window.activeTextEditor?.selection.active;
+        const currentPosition =
+          vscode.window.activeTextEditor?.selection.active;
 
         let currentPositionInLoop = 0;
         let currentWord: string = "";
         for (const word of currentWords) {
           currentPositionInLoop += word.length + 1;
-          if (position1!.character < currentPositionInLoop) {
+          if (currentPosition!.character < currentPositionInLoop) {
             currentWord = word.trim();
             break;
           }
@@ -148,14 +109,38 @@ export function activate(context: vscode.ExtensionContext) {
       position: vscode.Position,
       token
     ) {
-      const linePrefix = document
-        .lineAt(position)
-        .text.slice(0, position.character);
+      const editor = vscode.window.activeTextEditor;
 
-      console.log(linePrefix);
-      return {
-        contents: ["Hover Content"],
-      };
+      let currentWord: string = "";
+
+      if (editor) {
+        const wordRange = editor.document.getWordRangeAtPosition(position);
+
+        if (wordRange) {
+          currentWord = editor.document.getText(wordRange);
+          vscode.window.showInformationMessage(`Current Word: ${currentWord}`);
+        } else {
+          vscode.window.showWarningMessage(
+            "No word found at the cursor position."
+          );
+        }
+      } else {
+        vscode.window.showErrorMessage("No active text editor found.");
+      }
+
+      let matchedCommand: Command | undefined;
+
+      microcodeCommands.map((command: Command) => {
+        if (currentWord === command.command) matchedCommand = command;
+      });
+
+      if (matchedCommand) {
+        return {
+          contents: [matchedCommand.description],
+        };
+      } else {
+        return undefined;
+      }
     },
   });
 
