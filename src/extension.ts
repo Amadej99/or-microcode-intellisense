@@ -100,22 +100,31 @@ export function activate(context: vscode.ExtensionContext) {
         document: vscode.TextDocument,
         position: vscode.Position
       ) {
-        // get all text until the `position` and check if it reads `console.`
-        // and if so then complete if `log`, `warn`, and `error`
-        const linePrefix = document
-          .lineAt(position)
-          .text.slice(0, position.character);
+        const currentLine = document.lineAt(position.line).text;
+        const currentWords = currentLine.split(" ");
+
+        const position1 = vscode.window.activeTextEditor?.selection.active;
+
+        let currentPositionInLoop = 0;
+        let currentWord: string = "";
+        for (const word of currentWords) {
+          currentPositionInLoop += word.length + 1;
+          if (position1!.character < currentPositionInLoop) {
+            currentWord = word.trim();
+            break;
+          }
+        }
 
         let matchedCommand = undefined;
 
         microcodeCommands.map((command: Command) => {
-          if (linePrefix.endsWith(command.command + "="))
+          if (currentWord.endsWith(command.command + "="))
             matchedCommand = command.command;
         });
 
         if (matchedCommand === undefined) return undefined;
 
-        const commandArguments = getCommandArguments(linePrefix.slice(0, -1));
+        const commandArguments = getCommandArguments(currentWord.slice(0, -1));
 
         const completionItems = commandArguments?.map((arg) => {
           const completionItem = new vscode.CompletionItem(
@@ -133,5 +142,22 @@ export function activate(context: vscode.ExtensionContext) {
     "=" // triggered whenever a '=' is being typed
   );
 
-  context.subscriptions.push(provider1, provider2);
+  const provider3 = vscode.languages.registerHoverProvider("plaintext", {
+    provideHover(
+      document: vscode.TextDocument,
+      position: vscode.Position,
+      token
+    ) {
+      const linePrefix = document
+        .lineAt(position)
+        .text.slice(0, position.character);
+
+      console.log(linePrefix);
+      return {
+        contents: ["Hover Content"],
+      };
+    },
+  });
+
+  context.subscriptions.push(provider1, provider2, provider3);
 }
