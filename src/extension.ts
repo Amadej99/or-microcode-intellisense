@@ -26,7 +26,7 @@ function getCommandArguments(commandName: string): Argument[] | undefined {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  const provider1 = vscode.languages.registerCompletionItemProvider(
+  const commandCompletions = vscode.languages.registerCompletionItemProvider(
     "plaintext",
     {
       provideCompletionItems(
@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  const provider2 = vscode.languages.registerCompletionItemProvider(
+  const valueCompletions = vscode.languages.registerCompletionItemProvider(
     "plaintext",
     {
       provideCompletionItems(
@@ -103,46 +103,49 @@ export function activate(context: vscode.ExtensionContext) {
     "=" // triggered whenever a '=' is being typed
   );
 
-  const provider3 = vscode.languages.registerHoverProvider("plaintext", {
-    provideHover(
-      document: vscode.TextDocument,
-      position: vscode.Position,
-      token
-    ) {
-      const editor = vscode.window.activeTextEditor;
+  const hoverDocumentation = vscode.languages.registerHoverProvider(
+    "plaintext",
+    {
+      provideHover(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token
+      ) {
+        const editor = vscode.window.activeTextEditor;
 
-      let currentWord: string = "";
+        let currentWord: string = "";
 
-      if (editor) {
-        const wordRange = editor.document.getWordRangeAtPosition(position);
+        if (editor) {
+          const wordRange = editor.document.getWordRangeAtPosition(position);
 
-        if (wordRange) {
-          currentWord = editor.document.getText(wordRange);
-          vscode.window.showInformationMessage(`Current Word: ${currentWord}`);
-        } else {
-          vscode.window.showWarningMessage(
-            "No word found at the cursor position."
-          );
+          if (wordRange) {
+            currentWord = editor.document.getText(wordRange);
+            vscode.window.showInformationMessage(
+              `Current Word: ${currentWord}`
+            );
+          }
         }
-      } else {
-        vscode.window.showErrorMessage("No active text editor found.");
-      }
 
-      let matchedCommand: Command | undefined;
+        let matchedCommand: Command | undefined;
 
-      microcodeCommands.map((command: Command) => {
-        if (currentWord === command.command) matchedCommand = command;
-      });
+        microcodeCommands.map((command: Command) => {
+          if (currentWord === command.command) matchedCommand = command;
+        });
 
-      if (matchedCommand) {
-        return {
-          contents: [matchedCommand.description],
-        };
-      } else {
-        return undefined;
-      }
-    },
-  });
+        if (matchedCommand) {
+          return {
+            contents: [matchedCommand.description],
+          };
+        } else {
+          return undefined;
+        }
+      },
+    }
+  );
 
-  context.subscriptions.push(provider1, provider2, provider3);
+  context.subscriptions.push(
+    commandCompletions,
+    valueCompletions,
+    hoverDocumentation
+  );
 }
