@@ -2,8 +2,16 @@
   "commands": [
     {
       "command": "aluop",
-      "description": "## Izberi ukaz za ALU\n Možnosti:\n - Mul\n - Div\n - Add\n - Sub\n",
+      "description": "## Izberi ukaz za ALU\n Možnosti:\n - Add\n - Sub\n - Mul\n - Div\n - Rem\n - And\n - Or\n - Xor\n - Nand\n - Nor\n - Not\n - Lsl\n - Lsr\n - Asr\n - Rol\n - Ror",
       "args": [
+        {
+          "arg": "add",
+          "description": "Seštevanje"
+        },
+        {
+          "arg": "sub",
+          "description": "Odštevanje"
+        },
         {
           "arg": "mul",
           "description": "Množenje"
@@ -13,26 +21,66 @@
           "description": "Deljenje"
         },
         {
-          "arg": "add",
-          "description": "Seštevanje"
+          "arg": "rem",
+          "description": "Ostalost pri deljenju"
         },
         {
-          "arg": "sub",
-          "description": "Odštevanje"
+          "arg": "and",
+          "description": "Bitovni AND"
+        },
+        {
+          "arg": "or",
+          "description": "Bitovni OR"
+        },
+        {
+          "arg": "xor",
+          "description": "Bitovni XOR"
+        },
+        {
+          "arg": "nand",
+          "description": "Bitovni NAND"
+        },
+        {
+          "arg": "nor",
+          "description": "Bitovni NOR"
+        },
+        {
+          "arg": "not",
+          "description": "Bitovni NOT"
+        },
+        {
+          "arg": "lsl",
+          "description": "Logični premik v levo"
+        },
+        {
+          "arg": "lsr",
+          "description": "Logični premik v desno"
+        },
+        {
+          "arg": "asr",
+          "description": "Aritmetični premik v desno"
+        },
+        {
+          "arg": "rol",
+          "description": "Rotacija v levo"
+        },
+        {
+          "arg": "ror",
+          "description": "Rotacija v desno"
         }
       ]
     },
     {
       "command": "op2sel",
-      "description": "Izbere drugi operand za ALU",
+      "description": "## Izberi vir drugega operanda\n Možnosti:\n - Register\n - Neposredna vrednost\n - Konstanta 0\n - Konstanta 1",
       "args": [
         {
           "arg": "treg",
-          "description": "T-register"
+          "description": "Register"
         },
         {
           "arg": "immed",
-          "description": "Takojšnji operand"
+          "description": "Neposredna vrednost"
         },
         {
           "arg": "const0",
@@ -41,6 +89,192 @@
         {
           "arg": "const1",
           "description": "Konstanta 1"
+        }
+      ]
+    },
+    {
+      "command": "datawrite",
+      "description": "## Izberi zapisovanje podatkov\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
+        }
+      ]
+    },
+    {
+      "command": "addrsel",
+      "description": "## Izberi vir naslova\n Možnosti:\n - Števec programa (PC)\n - Neposredna vrednost\n - Rezultat ALU\n - Statusni register (SREG)",
+      "args": [
+        {
+          "arg": "pc",
+          "description": "Števec programa (PC)"
+        },
+        {
+          "arg": "immed",
+          "description": "Neposredna vrednost"
+        },
+        {
+          "arg": "aluout",
+          "description": "Rezultat ALU"
+        },
+        {
+          "arg": "sreg",
+          "description": "Statusni register (SREG)"
+        }
+      ]
+    },
+    {
+      "command": "pcsel",
+      "description": "## Izberi vir naslova števca programa (PC)\n Možnosti:\n - Števec programa (PC)\n - Neposredna vrednost\n - Kombinacija Števca programa in neposredne vrednosti\n - Statusni register (SREG)",
+      "args": [
+        {
+          "arg": "pc",
+          "description": "Števec programa (PC)"
+        },
+        {
+          "arg": "immed",
+          "description": "Neposredna vrednost"
+        },
+        {
+          "arg": "pcimmed",
+          "description": "Kombinacija Števca programa in neposredne vrednosti"
+        },
+        {
+          "arg": "sreg",
+          "description": "Statusni register (SREG)"
+        }
+      ]
+    },
+    {
+      "command": "pcload",
+      "description": "## Izberi nalaganje vrednosti v števec programa (PC)\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
+        }
+      ]
+    },
+    {
+      "command": "dwrite",
+      "description": "## Izberi zapisovanje podatkov\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
+        }
+      ]
+    },
+    {
+      "command": "irload",
+      "description": "## Izberi nalaganje instrukcije v Register instrukcij (IR)\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
+        }
+      ]
+    },
+    {
+      "command": "imload",
+      "description": "## Izberi nalaganje neposredne vrednosti v Register instrukcij (IR)\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
+        }
+      ]
+    },
+    {
+      "command": "regsrc",
+      "description": "## Izberi vir podatkov za Register instrukcij (IR)\n Možnosti:\n - Podatkovna linija (DATABUS)\n - Neposredna vrednost\n - Rezultat ALU\n - Statusni register (SREG)",
+      "args": [
+        {
+          "arg": "databus",
+          "description": "Podatkovna linija (DATABUS)"
+        },
+        {
+          "arg": "immed",
+          "description": "Takojšnji operand"
+        },
+        {
+          "arg": "aluout",
+          "description": "Rezultat ALU"
+        },
+        {
+          "arg": "sreg",
+          "description": "Statusni register (SREG)"
+        }
+      ]
+    },
+    {
+      "command": "indexsel",
+      "description": "## Izberi vir za indeksiranje pomnilnika\n Možnosti:\n - Brez indeksiranja (0)\n - Uporabi vrednost operacijske kode (OPCODE)",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Brez indeksiranja (0)"
+        },
+        {
+          "arg": "opcode",
+          "description": "Uporabi vrednost operacijske kode (OPCODE)"
+        }
+      ]
+    },
+    {
+      "command": "datasel",
+      "description": "## Izberi vir podatkov za ukaz\n Možnosti:\n - Števec programa (PC)\n - Register podatkov (DREG)\n - Rezultat ALU\n - Statusni register (SREG)",
+      "args": [
+        {
+          "arg": "pc",
+          "description": "Števec programa (PC)"
+        },
+        {
+          "arg": "dreg",
+          "description": "Register podatkov (DREG)"
+        },
+        {
+          "arg": "aluout",
+          "description": "Rezultat ALU"
+        },
+        {
+          "arg": "sreg",
+          "description": "Statusni register (SREG)"
+        }
+      ]
+    },
+    {
+      "command": "swrite",
+      "description": "## Izberi zapisovanje v pomnilnik\n Možnosti:\n - Ne\n - Da",
+      "args": [
+        {
+          "arg": "0",
+          "description": "Ne"
+        },
+        {
+          "arg": "1",
+          "description": "Da"
         }
       ]
     }
