@@ -8,6 +8,7 @@ interface Argument {
 
 interface Command {
   command: string;
+  unit: string;
   description: string;
   args: { arg: string; description: string }[];
 }
@@ -44,6 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
           completionItem.documentation = new vscode.MarkdownString(
             command.description
           );
+
+          completionItem.detail = command.unit;
 
           return completionItem;
         });
