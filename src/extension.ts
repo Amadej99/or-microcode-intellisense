@@ -17,8 +17,6 @@ const microcodeCommands = microcode.commands.map((command) => {
   return command;
 });
 
-console.log(microcodeCommands);
-
 function getCommandArguments(commandName: string): Argument[] | undefined {
   const command: Command | undefined = microcodeCommands.find(
     (c) => c.command === commandName
@@ -37,10 +35,14 @@ export function activate(context: vscode.ExtensionContext) {
         context: vscode.CompletionContext
       ) {
         const completionItems = microcodeCommands.map((command: Command) => {
+          const label = command.command + "[" + command.unit + "]";
+
           const completionItem = new vscode.CompletionItem(
-            command.command,
+            label,
             vscode.CompletionItemKind.Method
           );
+
+          completionItem.insertText = command.command;
 
           completionItem.documentation = new vscode.MarkdownString(
             command.description
@@ -123,9 +125,6 @@ export function activate(context: vscode.ExtensionContext) {
 
           if (wordRange) {
             currentWord = editor.document.getText(wordRange);
-            vscode.window.showInformationMessage(
-              `Current Word: ${currentWord}`
-            );
           }
         }
 

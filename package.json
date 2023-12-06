@@ -1,8 +1,9 @@
 {
   "name": "or-microcode-intellisense",
-  "displayName": "IntelliSense for OR Microcode",
-  "version": "0.0.1",
-  "publisher": "amadejm",
+  "displayName": "OR Microcode Intellisense",
+  "description": "Provides intellisense for basic_microcode.def files used in OR FRI",
+  "version": "0.0.2",
+  "publisher": "Amadej99",
   "private": true,
   "license": "MIT",
   "repository": {
